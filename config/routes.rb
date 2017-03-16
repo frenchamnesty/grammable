@@ -1,9 +1,6 @@
 Rails.application.routes.draw do
-
-  devise_for :users
   root "grams#index"
-
-  resources :users
-  resources :grams
+  devise_for :users
+  resources :grams, only: [:new, :create, :show]
 
 end

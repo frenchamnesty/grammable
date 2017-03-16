@@ -9,6 +9,8 @@ RSpec.describe GramsController, type: :controller do
     end
 
     it "should return a 404 error if the gram is not found" do
+      get :show, params: { id: 'TACOCAT' }
+      expect(response).to have_http_status(:not_found)
     end
   end
 
@@ -28,7 +30,6 @@ RSpec.describe GramsController, type: :controller do
     it "should successfully show the new form" do
       user = FactoryGirl.create(:user)
       sign_in user
-
       get :new
       expect(response).to have_http_status(:success)
     end
