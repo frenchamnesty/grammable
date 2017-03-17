@@ -1,6 +1,20 @@
 require 'rails_helper'
 
 RSpec.describe GramsController, type: :controller do
+
+  describe "grams#edit" do
+    it "should successfuly show the edit page if the gram is found" do
+      gram = FactoryGirl.create(:gram)
+      get :edit, params: {id: gram.id}
+      expect(response).to have_http_status(:success)
+    end
+
+    it "should return a 404 error message if the gram is not found" do
+      get :edit, params: { id: 'swag' }
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
   describe "grams#show action" do
     it "should successfully show the page if the gram is found" do
       gram = FactoryGirl.create(:gram)
@@ -45,7 +59,7 @@ RSpec.describe GramsController, type: :controller do
       user = FactoryGirl.create(:user)
       sign_in user
 
-          post :create, params: { gram: { message: 'Hello!' }}
+      post :create, params: { gram: { message: 'Hello!' }}
       expect(response).to redirect_to root_path
 
       gram = Gram.last
@@ -60,7 +74,7 @@ RSpec.describe GramsController, type: :controller do
       gram_count = Gram.count
       post :create, params: { gram: { message: '' }}
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(Gram.count).to eq Gram.count
+      expect(Gram.count).to eq gram_count
     end
 
   end
