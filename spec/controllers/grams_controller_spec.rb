@@ -3,8 +3,16 @@ require 'rails_helper'
 RSpec.describe GramsController, type: :controller do
   
   describe "grams#destroy" do 
+    
+    it "shouldn't let unauthenticated users delete a gram" do
+      gram = FactoryGirl.create(:gram)
+      delete :destroy, params: { id: gram.id }
+      expect(gram).to redirect_to new_user_session_path
+    end 
+    
     it "should successfuly delete the gram if the gram is found" do 
       gram = FactoryGirl.create(:gram)
+      sign_in gram.user
       delete :destroy, params: { id: gram.id }
       expect(response).to redirect_to root_path 
       gram = Gram.find_by_id(gram.id)
@@ -12,14 +20,24 @@ RSpec.describe GramsController, type: :controller do
     end
     
     it "should return a 404 message if the gram is not found" do 
+      user = FactoryGirl.create(:user)
+      sign_in user 
       delete :destroy, params: { id: 'oops'}
       expect(response).to have_http_status(:not_found)
     end 
   end 
   
   describe "grams#update" do 
+    
+    it "should only let authenticated users to update a gram" do 
+      gram = FactoryGirl.create(:gram)
+      patch :update, params: { id: gram.id, gram: {message: 'changed' }}
+      expect(response).to redirect_to new_user_session_path
+    end 
+    
     it "should successfully update the gram if the gram is found" do 
       gram = FactoryGirl.create(:gram, message: "initial value")
+      sign_in gram.user
       patch :update, params: { id: gram.id, gram: { message: 'changed' } }
       expect(response).to redirect_to root_path 
       gram.reload 
@@ -27,12 +45,15 @@ RSpec.describe GramsController, type: :controller do
     end 
     
     it "should return a 404 message if the gram is not found" do 
+      user = FactoryGirl.create(:user)
+      sign_in user 
       patch :update, params: { id: 'yoloswag', gram: { message: 'changed' } }
       expect(response).to have_http_status(:not_found)
     end 
     
     it "should return an error if the gram is not updated as unprocessable entity" do
       gram = FactoryGirl.create(:gram, message: 'initial value')
+      sign_in gram.user 
       patch :update, params: { id: gram.id, gram: { message: '' } }
       expect(response).to have_http_status(:unprocessable_entity)
       gram.reload 
@@ -41,19 +62,30 @@ RSpec.describe GramsController, type: :controller do
   end 
 
   describe "grams#edit" do
+    
+    it "shouldn't let unauthenticated users edit a gram" do 
+      gram = FactoryGirl.create(:gram)
+      get :edit, params: {id: gram.id}
+      expect(response).to redirect_to new_user_session_path
+    end 
+    
     it "should successfuly show the edit page if the gram is found" do
       gram = FactoryGirl.create(:gram)
+      sign_in gram.user 
       get :edit, params: {id: gram.id}
       expect(response).to have_http_status(:success)
     end
 
     it "should return a 404 error message if the gram is not found" do
+      user = FactoryGirl.create(:user)
+      sign_in user 
       get :edit, params: { id: 'swag' }
       expect(response).to have_http_status(:not_found)
     end
   end
 
   describe "grams#show action" do
+    
     it "should successfully show the page if the gram is found" do
       gram = FactoryGirl.create(:gram)
       get :show, params: { id: gram.id }
