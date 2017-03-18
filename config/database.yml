@@ -10,10 +10,12 @@ default: &default
 development:
   <<: *default
   database: grammable_development
+  template: template0
 
 test:
   <<: *default
   database: grammable_test
+  template: template0
 
 production:
   <<: *default
