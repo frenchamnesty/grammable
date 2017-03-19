@@ -65,9 +65,9 @@ RSpec.describe GramsController, type: :controller do
     
     it "shouldn't let a user who didn't create the gram edit the gram" do 
       gram = FactoryGirl.create(:gram)
-      sign_in user
       user = FactoryGirl.create(:user)
-      get :edit, params: {id: gram.id}
+      sign_in user
+      get :edit, params: { id: gram.id }
       expect(response).to have_http_status(:forbidden)
     end 
     
