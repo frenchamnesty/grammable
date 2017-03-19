@@ -4,6 +4,14 @@ RSpec.describe GramsController, type: :controller do
   
   describe "grams#destroy" do 
     
+    it "should only allow the user who created the gram to be able to delete it" do 
+      gram = FactoryGirl.create(:gram)
+      user = FactoryGirl.create(:user)
+      sign_in user 
+      get :destroy, params: { id: gram.id }
+      expect(response).to have_http_status(:forbidden)
+    end 
+    
     it "shouldn't let unauthenticated users delete a gram" do
       gram = FactoryGirl.create(:gram)
       delete :destroy, params: { id: gram.id }
