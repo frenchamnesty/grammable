@@ -63,6 +63,14 @@ RSpec.describe GramsController, type: :controller do
 
   describe "grams#edit" do
     
+    it "shouldn't let a user who didn't create the gram edit the gram" do 
+      gram = FactoryGirl.create(:gram)
+      sign_in user
+      user = FactoryGirl.create(:user)
+      get :edit, params: {id: gram.id}
+      expect(response).to have_http_status(:forbidden)
+    end 
+    
     it "shouldn't let unauthenticated users edit a gram" do 
       gram = FactoryGirl.create(:gram)
       get :edit, params: {id: gram.id}
@@ -99,6 +107,7 @@ RSpec.describe GramsController, type: :controller do
   end
 
   describe "grams#index action" do
+    
     it "should successfully show the page" do
       get :index
       expect(response).to have_http_status(:success)
@@ -106,6 +115,7 @@ RSpec.describe GramsController, type: :controller do
   end
 
   describe "grams#new action" do
+    
     it "should require users to be logged in" do
       get :new
       expect(response).to redirect_to new_user_session_path
