@@ -20,6 +20,7 @@ class GramsController < ApplicationController
 
   def show
     @gram = Gram.find_by_id(params[:id])
+    @comment = Comment.new
     return render_not_found if @gram.blank?
   end
 
