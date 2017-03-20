@@ -1,115 +1,115 @@
 require 'rails_helper'
 
 RSpec.describe GramsController, type: :controller do
-  
-  describe "grams#destroy" do 
-    
-    it "should only allow the user who created the gram to be able to delete it" do 
+
+  describe "grams#destroy" do
+
+    it "should only allow the user who created the gram to be able to delete it" do
       gram = FactoryGirl.create(:gram)
       user = FactoryGirl.create(:user)
-      sign_in user 
+      sign_in user
       get :destroy, params: { id: gram.id }
       expect(response).to have_http_status(:forbidden)
-    end 
-    
+    end
+
     it "shouldn't let unauthenticated users delete a gram" do
       gram = FactoryGirl.create(:gram)
       delete :destroy, params: { id: gram.id }
       expect(gram).to redirect_to new_user_session_path
-    end 
-    
-    it "should successfuly delete the gram if the gram is found" do 
+    end
+
+    it "should successfuly delete the gram if the gram is found" do
       gram = FactoryGirl.create(:gram)
       sign_in gram.user
       delete :destroy, params: { id: gram.id }
-      expect(response).to redirect_to root_path 
+      expect(response).to redirect_to root_path
       gram = Gram.find_by_id(gram.id)
       expect(gram).to eq nil
     end
-    
-    it "should return a 404 message if the gram is not found" do 
+
+    it "should return a 404 message if the gram is not found" do
       user = FactoryGirl.create(:user)
-      sign_in user 
+      sign_in user
       delete :destroy, params: { id: 'oops'}
       expect(response).to have_http_status(:not_found)
-    end 
-  end 
-  
-  describe "grams#update" do 
-    
-    it "shouldn't let users who didnt create the gram update the gram" do 
+    end
+  end
+
+  describe "grams#update" do
+
+    it "shouldn't let users who didnt create the gram update the gram" do
       gram = FactoryGirl.create(:gram)
       user = FactoryGirl.create(:user)
-      sign_in user 
+      sign_in user
       patch :update, params: { id: gram.id, gram: { message: 'wahoo' }}
       expect(response).to have_http_status(:forbidden)
-    end 
-    
-    it "should only let authenticated users to update a gram" do 
+    end
+
+    it "should only let authenticated users to update a gram" do
       gram = FactoryGirl.create(:gram)
       patch :update, params: { id: gram.id, gram: {message: 'changed' }}
       expect(response).to redirect_to new_user_session_path
-    end 
-    
-    it "should successfully update the gram if the gram is found" do 
+    end
+
+    it "should successfully update the gram if the gram is found" do
       gram = FactoryGirl.create(:gram, message: "initial value")
       sign_in gram.user
       patch :update, params: { id: gram.id, gram: { message: 'changed' } }
-      expect(response).to redirect_to root_path 
-      gram.reload 
+      expect(response).to redirect_to root_path
+      gram.reload
       expect(gram.message).to eq "changed"
-    end 
-    
-    it "should return a 404 message if the gram is not found" do 
+    end
+
+    it "should return a 404 message if the gram is not found" do
       user = FactoryGirl.create(:user)
-      sign_in user 
+      sign_in user
       patch :update, params: { id: 'yoloswag', gram: { message: 'changed' } }
       expect(response).to have_http_status(:not_found)
-    end 
-    
+    end
+
     it "should return an error if the gram is not updated as unprocessable entity" do
       gram = FactoryGirl.create(:gram, message: 'initial value')
-      sign_in gram.user 
+      sign_in gram.user
       patch :update, params: { id: gram.id, gram: { message: '' } }
       expect(response).to have_http_status(:unprocessable_entity)
-      gram.reload 
+      gram.reload
       expect(gram.message).to eq 'initial value'
-    end 
-  end 
+    end
+  end
 
   describe "grams#edit" do
-    
-    it "shouldn't let a user who didn't create the gram edit the gram" do 
+
+    it "shouldn't let a user who didn't create the gram edit the gram" do
       gram = FactoryGirl.create(:gram)
       user = FactoryGirl.create(:user)
       sign_in user
       get :edit, params: { id: gram.id }
       expect(response).to have_http_status(:forbidden)
-    end 
-    
-    it "shouldn't let unauthenticated users edit a gram" do 
+    end
+
+    it "shouldn't let unauthenticated users edit a gram" do
       gram = FactoryGirl.create(:gram)
       get :edit, params: {id: gram.id}
       expect(response).to redirect_to new_user_session_path
-    end 
-    
+    end
+
     it "should successfuly show the edit page if the gram is found" do
       gram = FactoryGirl.create(:gram)
-      sign_in gram.user 
+      sign_in gram.user
       get :edit, params: {id: gram.id}
       expect(response).to have_http_status(:success)
     end
 
     it "should return a 404 error message if the gram is not found" do
       user = FactoryGirl.create(:user)
-      sign_in user 
+      sign_in user
       get :edit, params: { id: 'swag' }
       expect(response).to have_http_status(:not_found)
     end
   end
 
   describe "grams#show action" do
-    
+
     it "should successfully show the page if the gram is found" do
       gram = FactoryGirl.create(:gram)
       get :show, params: { id: gram.id }
@@ -123,7 +123,7 @@ RSpec.describe GramsController, type: :controller do
   end
 
   describe "grams#index action" do
-    
+
     it "should successfully show the page" do
       get :index
       expect(response).to have_http_status(:success)
@@ -131,7 +131,7 @@ RSpec.describe GramsController, type: :controller do
   end
 
   describe "grams#new action" do
-    
+
     it "should require users to be logged in" do
       get :new
       expect(response).to redirect_to new_user_session_path
@@ -155,7 +155,12 @@ RSpec.describe GramsController, type: :controller do
       user = FactoryGirl.create(:user)
       sign_in user
 
-      post :create, params: { gram: { message: 'Hello!' }}
+      post :create, params: {
+        gram: {
+          message: 'Hello!',
+          picture: fixture_file_upload('/picture.png', 'image/png') 
+        }
+      }
       expect(response).to redirect_to root_path
 
       gram = Gram.last
