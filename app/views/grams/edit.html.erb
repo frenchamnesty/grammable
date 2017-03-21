@@ -1,6 +1,18 @@
+<div class="col-10 offset-1 col-sm-8 offset-sm-2 col-md-6 offset-md-3 card form">
+
 <h1> Edit Gram </h1>
 
 <%= simple_form_for @gram do |f| %>
+
+<div class="form-inputs">
   <%= f.input :message %>
-  <%= f.submit { controller: :grams, action: :update } %>
+  <%= f.input :picture %>
+</div>
+
+<div class="form-actions">
+  <%= f.button :submit, "Update", class: 'my-btn' %>
+</div>
+
 <% end %>
+
+</div>
