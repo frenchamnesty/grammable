@@ -2,10 +2,17 @@
 
 <h1> New Gram </h1>
 <br/>
-  <%= simple_form_for @gram do |f| %>
-    <%= f.input :message %>
-    <%= f.input :picture %>
-    <%= f.submit "Post!", class: 'my-btn' %>
-  <% end %>
+<%= simple_form_for @gram do |f| %>
+
+<div class="form-inputs">
+  <%= f.input :message, label: 'Caption' %>
+  <%= f.input :picture %>
+</div>
+
+<div class="form-actions">
+  <%= f.button :submit, "Post", class: 'my-btn' %>
+</div>
+
+<% end %>
 <br/>
 </div>
