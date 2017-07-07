@@ -11,7 +11,7 @@
 
 1. fork it!
 2. create your branch: `git checkout -b feature-name`
-3. commit changes: `git commit -am 'new feature for chatter'`
+3. commit changes: `git commit -am 'new feature for grammable'`
 4. push to the branch: `git push origin feature-name`
 5. submit a pull request
 
