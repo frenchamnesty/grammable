@@ -2,7 +2,7 @@
 
 ## INSTALLATION AND USAGE
 
-1. `git clone https://github.com/frenchamnesty/grammable.git chatter`
+1. `git clone https://github.com/frenchamnesty/grammable.git`
 2. `cd grammabe`
 3. `bundle install`
 4. `rails s`
